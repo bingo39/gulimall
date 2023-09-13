@@ -1,0 +1,16 @@
+server:
+  port: 12000
+
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+      ## nacos配置中心
+      config:
+        name: gulimall-search
+  ## 注册中心
+  application:
+    name: gulimall-search
+  thymeleaf:
+    cache: false

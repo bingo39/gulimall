@@ -1,0 +1,83 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        ## 网关的路由使用数组型式。yml中数组是用-表示
+        - id: test_route
+          uri: https://www.baidu.com
+          ## 断言规则,也是数组型式
+          predicates:
+            ## Query:数组元素，元素包含：键值对，其中值可用正则
+            - Query=url,baidu
+        - id: qq_route
+          uri: https://www.qq.com
+          predicates:
+            - Query=url,
+
+        ## 注意：要把精确路由放在高优先级，不然就会给模糊路由先掠走访问
+        ##  各个服务的重定向
+        ## 商品服务
+        - id: product_route
+          uri: lb://gulimall-product
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
+        ## member会员服务
+        - id: member_route
+          uri: lb://gulimall-member
+          predicates:
+            - Path=/api/member/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
+        ## member会员服务
+        - id: ware_route
+          uri: lb://gulimall-ware
+          predicates:
+            - Path=/api/ware/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
+        ## oss存储服务，third-party模块
+        - id: third_party_route
+          uri: lb://gulimall-third-party
+          predicates:
+            - Path=/api/thirdparty/**
+          filters:
+            - RewritePath=/api/thirdparty(?<segment>.*),/$\{segment}
+
+        ## 认证中心服务，auth-server模块
+        - id: gulimall_auth_server
+          uri: lb://gulimall-auth-server
+          predicates:
+            - Host=auth.gulimall.com
+
+        ## 把前端请求发送到renren-fast服务
+        - id: admin_route
+          ## lb：负载均衡
+          uri: lb://renren-fast
+          predicates:
+            - Path=/api/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/renren-fast/$\{segment}
+
+        ## nginx负载均衡给网关【放在最后，不然会截掉api请求】
+        - id: gulimall_host_route
+          ## lb：负载均衡
+          uri: lb://gulimall-product
+          predicates:
+            - Host=gulimall.com,item.gulimall.com
+
+        ## *.gulimall.com请求转给search服务
+        - id: gulimall_search_route
+          uri: lb://gulimall-search
+          predicates:
+            - Host=search.gulimall.com
+
+
+  ## 前端项目，url请求带有/api前缀，都发送到renren-fast
+  ## eg: http://localhost:88/api/captcha.jpg => http://localhost:8080/renren-fast/captcha.jpg
+
+## url示例：http://localhost:88/?url=qq

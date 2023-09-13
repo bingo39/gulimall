@@ -1,0 +1,61 @@
+server:
+  port: 10000
+
+spring:
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://192.168.31.106:3306/gulimall_pms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    # 配置注册中心：nacos server
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+    alicloud:
+      access-key: LTAI5tMRYRKGwEQD3Gjexogq
+      secret-key: SQXXvsVa01dAyXaldoUAQ5pZSPNnVm
+      oss:
+        endpoint: oss-cn-guangzhou.aliyuncs.com
+    # jackson : 指定格式化时间戳
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  thymeleaf:
+    ## 开发期间关闭thymeleaf的缓存功能
+    cache: false
+  redis:
+    host: 192.168.31.106
+    port: 6379
+  # SpringCache
+  ##cache-names: xxxx 作用：配置缓存名字
+  ##spring-cache-redis-time-to-live:缓存存活时间
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000
+      ### rdis的key前缀
+      ### 如果制定了前缀就用指定的前缀，如果没有就默认使用缓存的名字作为前缀
+      #      key-prefix: CACHE_
+      ### 使用分区名作为前缀,默认true
+      use-key-prefix: true
+      ### 是否缓存空值【防止缓存穿透】
+      cache-null-values: true
+  # nacos注册中心需要每个服务都有对应应用的名字
+  application:
+    name: gulimall-product
+
+mybatis-plus:
+  ## *表示不只是扫描类路径，连依赖路径下的xml文件都一起扫描
+  mapper-locations: classpath*:/mapper/**/*.xml
+  ## 主键自增
+  global-config:
+    db-config:
+      id-type: auto
+      #      logic-delete-field: flag # 全局逻辑删除的实体字段名(since 3.3.0,配置后可以忽略不配置步骤2)
+      ## 逻辑删除
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+## mybatis-plus的日志功能
+logging:
+  level:
+    com.atguigu.gulimall: debug

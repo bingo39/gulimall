@@ -1,0 +1,26 @@
+server:
+  port: 8000
+
+spring:
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://192.168.31.106:3306/gulimall_ums?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    # nacos server
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  # nacos注册中心需要每个服务都有对应应用的名字
+  # feign不支持调用的服务名称带有下划线"_"
+  application:
+    name: gulimall-member
+
+mybatis-plus:
+  ## *表示不只是扫描类路径，连依赖路径下的xml文件都一起扫描
+  mapper-locations: classpath*:/mapper/**/*.xml
+  ## 主键自增
+  global-config:
+    db-config:
+      id-type: auto
