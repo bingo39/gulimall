@@ -18,7 +18,8 @@ public class GulimallWedConfig implements WebMvcConfigurer {
          *         return "login";
          *     }
          */
-        registry.addViewController("/login.html").setViewName("login");
+        //要是controller内有逻辑，就老老实实用controller
+//        registry.addViewController("/login.html").setViewName("login");
 
         /**
          * 相当于：

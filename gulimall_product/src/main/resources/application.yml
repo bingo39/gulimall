@@ -43,6 +43,9 @@ spring:
   # nacos注册中心需要每个服务都有对应应用的名字
   application:
     name: gulimall-product
+  # springSession设置redis存储session
+  session:
+    store-type: redis
 
 mybatis-plus:
   ## *表示不只是扫描类路径，连依赖路径下的xml文件都一起扫描

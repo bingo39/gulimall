@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 /**
  * 1.整合mybatis-plus
@@ -67,6 +68,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * 4.2)修改完页面 controller build product(shift + f9快捷键)
  */
 
+@EnableRedisHttpSession  //整合redis作为session存储
 @EnableCaching  //开启SpringCache缓存功能
 @EnableDiscoveryClient  //开启服务注册发现客户端
 @MapperScan("com.atguigu.gulimall.product.dao")

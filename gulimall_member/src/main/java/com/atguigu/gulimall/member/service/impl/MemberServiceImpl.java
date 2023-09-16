@@ -67,6 +67,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         memberEntity.setMobile(memberRegisterVo.getPhone());
         //设置用户名
         memberEntity.setUsername(memberRegisterVo.getUserName());
+        //设置昵称
+        memberEntity.setNickname(memberRegisterVo.getUserName());
         //设置密码 【数据库存储密码要进行加密处理】
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         memberEntity.setPassword(passwordEncoder.encode(memberRegisterVo.getPassWord()));
@@ -93,6 +95,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         }
     }
 
+    //账号登录
     @Override
     public MemberEntity login(MemBerLoginVo memBerLoginVo) {
         //账号匹配【用户名&手机号】
@@ -116,6 +119,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
 
     }
 
+    //社交登录
     @Override
     public MemberEntity login(SocialUser socialUser) throws Exception {
         //登录和注册合并逻辑
@@ -138,7 +142,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
                 updateDate.setExpiresIn(socialUser.getExpires_in());
                 //...其他的不重要，更不更新无所谓
                 memberDao.updateById(updateDate);
-
                 memberEntity.setAccessToken(socialUser.getAccess_token());
                 memberEntity.setExpiresIn(socialUser.getExpires_in());
                 return memberEntity;

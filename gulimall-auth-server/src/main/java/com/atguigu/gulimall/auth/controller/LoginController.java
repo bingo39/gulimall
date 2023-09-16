@@ -4,6 +4,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.constant.AuthServerConstant;
 import com.atguigu.common.exception.BizCodeEnume;
 import com.atguigu.common.utils.R;
+import com.atguigu.common.vo.MemberRespVo;
 import com.atguigu.gulimall.auth.feign.MemberFeignService;
 import com.atguigu.gulimall.auth.feign.ThirdPartFeignService;
 import com.atguigu.gulimall.auth.vo.UserLoginVo;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.thymeleaf.util.StringUtils;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
@@ -140,16 +142,38 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(UserLoginVo vo,RedirectAttributes redirectAttributes){
+    public String login(UserLoginVo vo, RedirectAttributes redirectAttributes, HttpSession session){
         //远程登录
         R login = memberFeignService.login(vo);
         if(login.getCode() == 0){
+            //成功
+            MemberRespVo data = login.getData("data", new TypeReference<MemberRespVo>() {
+            });
+            session.setAttribute(AuthServerConstant.lOGIN_USER,data);
+            login.getData("data",new TypeReference<MemberRespVo>(){});
             return "redirect:http://gulimall.com";
         }else {
             HashMap<String, String> errors = new HashMap<>();
             errors.put("msg",login.getData("msg",new TypeReference<String>(){}));
             redirectAttributes.addFlashAttribute("errors",errors);
             return "redirect:http://auth.gulimall.com/login.html";
+        }
+    }
+
+    /**
+     * 补充完善：登录页跳转
+     * 登录后，再次访问登录页面，也会跳到gulimall.com,而不是auth.gulimall.com
+     * 备注：不用addViewControllers方法做url映射，不然不方便写逻辑，还是直接用controller方法接收
+     */
+    @GetMapping("/login.html")
+    public String LoginPage(HttpSession httpSession){
+        Object attribute = httpSession.getAttribute(AuthServerConstant.lOGIN_USER);
+        if(attribute == null){
+            // 没登陆过，发送登录
+            return "login";
+        }else {
+            //登陆过，重定向到gulimall.com
+            return "redirect:http://gulimall.com";
         }
     }
 
