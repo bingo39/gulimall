@@ -1,2 +1,1 @@
-*.yaml linguist-language=java
-*.xml linguist-language=java
+*.js linguist-language = java
