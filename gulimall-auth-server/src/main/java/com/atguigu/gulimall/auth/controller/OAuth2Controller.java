@@ -32,9 +32,9 @@ public class OAuth2Controller {
     @GetMapping("/oauth2.0/gitee/success")
     public String gitee(@RequestParam("code") String code, HttpSession session) throws Exception {
         Map<String, String> map = new HashMap();
-        map.put("client_id","71fdfac0ffdf265a0c293206db3f2fac2a6c8627bea1ce1ab137d8a28dbb93eb");
+        map.put("client_id","个人client_id");
         map.put("redirect_uri","http://auth.gulimall.com/oauth2.0/gitee/success");
-        map.put("client_secret","77dc9a8ceb8c6e3e624d022236910c2aed370f615bb5188da2d04054c2f42960");
+        map.put("client_secret","个人client_secret");
         map.put("code",code);
         map.put("grant_type","authorization_code");
         //1.根据code换取access_token
