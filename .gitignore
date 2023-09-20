@@ -19,6 +19,10 @@ target/
 *.iml
 *.ipr
 
+### github
+gulimall-sql
+image
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
