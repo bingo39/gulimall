@@ -54,6 +54,12 @@ spring:
           predicates:
             - Host=auth.gulimall.com
 
+        ## 购物车服务，cart模块
+        - id: gulimall-cart
+          uri: lb://gulimall-cart
+          predicates:
+            - Host=cart.gulimall.com
+
         ## 把前端请求发送到renren-fast服务
         - id: admin_route
           ## lb：负载均衡
