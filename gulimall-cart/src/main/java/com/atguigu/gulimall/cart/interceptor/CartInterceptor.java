@@ -23,7 +23,7 @@ import java.util.UUID;
 @Component
 public class CartInterceptor implements HandlerInterceptor {
 
-    //ThreadLocal：共享线程内的数据。即上一个线程传输的数据在下一个线程也可以使用到
+    //ThreadLocal：共享线程内的数据。即存储的数据只能由该线程访问到
     public static ThreadLocal<UserInfoTo> threadLocal = new ThreadLocal<>();
 
     /**

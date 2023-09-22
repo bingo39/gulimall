@@ -56,8 +56,7 @@ public class Cart {
             }
         }
         //2.减去优惠总价
-        BigDecimal subtract = amount.subtract(getReduce());
-        return subtract;
+        return amount.subtract(getReduce());
     }
 
 }
