@@ -12,6 +12,23 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+  ## rabitmq配置
+  rabbitmq:
+    host: 192.168.31.106
+    port: 5672
+    virtual-host: /
+    ### 开启发送端确认
+    publisher-confirms: true
+    ### 开启发送端消息抵达队列的确认
+    publisher-returns: true
+    ### 只要抵达队列，以异步发送优先回调这个returnConfirm
+    template:
+      mandatory: true
+    ### 开启ack手动确认模式
+    listener:
+      simple:
+        acknowledge-mode: manual
+
   # nacos注册中心需要每个服务都有对应应用的名字
   application:
     name: gulimall-order
