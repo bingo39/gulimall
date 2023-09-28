@@ -13,7 +13,7 @@ spring:
         host: https://dfsns.market.alicloudapi.com
         path: /data/send_sms
         method: POST
-        appcode: f8cedaeaaaf2455ebd275ddc248ad277
+        appcode: {appcode]
         templateId: CST_ptdie100
   thymeleaf:
   ## 开发期间关闭thymeleaf的缓存功能
