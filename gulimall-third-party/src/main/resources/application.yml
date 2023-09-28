@@ -4,8 +4,8 @@ spring:
       discovery:
         server-addr: 127.0.0.1:8848
     alicloud:
-      access-key: {access-key}
-      secret-key: {secret-key}
+      access-key: {个人access-key}
+      secret-key: {个人secret-key}
       oss:
         endpoint: oss-cn-guangzhou.aliyuncs.com
         bucket: direct-rent
@@ -13,7 +13,7 @@ spring:
         host: https://dfsns.market.alicloudapi.com
         path: /data/send_sms
         method: POST
-        appcode: {appcode]
+        appcode: {个人appcode}
         templateId: CST_ptdie100
   thymeleaf:
   ## 开发期间关闭thymeleaf的缓存功能
