@@ -60,6 +60,12 @@ spring:
           predicates:
             - Host=cart.gulimall.com
 
+        ## 订单服务，gulimall-order
+        - id: gulimall-order
+          uri: lb://gulimall-order
+          predicates:
+            - Host=order.gulimall.com
+
         ## 把前端请求发送到renren-fast服务
         - id: admin_route
           ## lb：负载均衡
