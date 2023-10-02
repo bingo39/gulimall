@@ -16,5 +16,5 @@ public class OrderItemVo {
     private List<String> skuAttr;     //套餐属性
     private BigDecimal price;       //价格
     private Integer count;      //数量
-
+    private BigDecimal weight;      //重量
 }

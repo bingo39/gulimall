@@ -166,7 +166,8 @@ public class CartServiceImpl implements CartService {
                 return item.getCheck();    //只要获取选中的购物项
             }).map(item->{
                             //获取到cartItem对象后，实时更新价格
-                        String data = (String)productFeignService.getPrice(userInfoTo.getUserId()).get("data");
+                        Long userId = userInfoTo.getUserId();
+                        String data = (String)productFeignService.getPrice(userId).get("data");
                         item.setPrice(new BigDecimal(data));
                         return item;
                     }).collect(Collectors.toList());
