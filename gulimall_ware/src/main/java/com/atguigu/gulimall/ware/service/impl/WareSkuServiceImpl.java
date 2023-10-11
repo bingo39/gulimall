@@ -1,8 +1,9 @@
 package com.atguigu.gulimall.ware.service.impl;
 
+import com.atguigu.common.exception.NoStockException;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.ware.feign.ProductFeignService;
-import com.atguigu.gulimall.ware.vo.SkuHasStockVo;
+import com.atguigu.gulimall.ware.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import com.atguigu.common.utils.Query;
 import com.atguigu.gulimall.ware.dao.WareSkuDao;
 import com.atguigu.gulimall.ware.entity.WareSkuEntity;
 import com.atguigu.gulimall.ware.service.WareSkuService;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 
@@ -96,6 +98,54 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             return skuHasStockVo;
         }).collect(Collectors.toList());
         return collect;
+    }
+
+    @Transactional(rollbackFor = NoStockException.class)
+    @Override
+    public Boolean orderLockStock(WareSkuLockVo vo) {
+
+        //1.按照下单的收货地址，找到一个就近的仓库，锁定库存
+
+        //2.找到每个商品在哪个仓库都有库存
+        List<OrderItemVo> lock = vo.getLock();
+        List<SkuWareHasStock> collect = lock.stream().map(item -> {
+            SkuWareHasStock stock = new SkuWareHasStock();
+            Long skuId = item.getSkuId();
+            stock.setSkuId(skuId);
+            stock.setNum(item.getCount());
+            //查询这个商品在哪里有库存
+            List<Long> wareIds = wareSkuDao.listWareIdHasSkuStock(skuId);
+            stock.setWareId(wareIds);
+            return stock;
+        }).collect(Collectors.toList());
+
+        Boolean allLock = true;
+        //3.锁定库存
+        for(SkuWareHasStock hasStock:collect){
+            Boolean skuStocked = false;
+            Long skuId = hasStock.getSkuId();
+            List<Long> wareIds = hasStock.getWareId();
+            if(wareIds ==null && wareIds.size()==0){
+                //没有任何仓库有这个商品的库存
+                throw new NoStockException(skuId);
+            }
+            for (Long wareId:wareIds){
+                Long count = wareSkuDao.lockSkuStock(skuId, wareId, hasStock.getNum());
+                if(count==1){
+                    skuStocked = true;
+                    break;
+                }else{
+                    //当前仓库锁失败，重试下一个仓库
+                }
+            }
+            if(skuStocked == false){
+                //当前商品所有仓库都没锁住
+                throw new NoStockException(skuId);
+            }
+        }
+
+        //全部都是锁定成功的
+        return true;
     }
 
 }

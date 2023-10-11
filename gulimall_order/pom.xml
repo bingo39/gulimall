@@ -33,6 +33,11 @@
             <scope>test</scope>
         </dependency>
 
+        <!--引入动态代理：解决本地事务失效问题-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
         <!--测试类，视频的启动不了-->
         <dependency>
             <groupId>junit</groupId>

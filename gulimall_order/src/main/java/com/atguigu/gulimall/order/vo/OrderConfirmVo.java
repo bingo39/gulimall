@@ -29,7 +29,7 @@ public class OrderConfirmVo {
     private BigDecimal payPrice;
 
     //防重复提交令牌
-    private Integer orderToken;
+    private String orderToken;
 
     //库存信息
     Map<Long,Boolean> stock;

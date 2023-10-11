@@ -52,7 +52,10 @@
                     <groupId>com.alibaba.cloud</groupId>
                     <artifactId>spring-cloud-starter-alicloud-oss</artifactId>
                 </exclusion>
-                <!--网关不需要用到数据库，排除所有关于数据库的依赖-->
+                <exclusion>
+                    <groupId>com.alibaba.cloud</groupId>
+                    <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
     </dependencies>
