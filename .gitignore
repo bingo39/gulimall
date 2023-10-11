@@ -21,7 +21,11 @@ target/
 
 ### github
 gulimall-sql
-image
+*.gitignore
+gulimall-auth-server/src/main/java/com/atguigu/gulimall/auth/controller/OAuth2Controller.java
+gulimall-third-party/src/main/resources/application.yml
+gulimall_order/src/main/java/com/atguigu/gulimall/order/web/HelloController.java
+gulimall_product/src/main/resources/application.yml
 
 ### NetBeans ###
 /nbproject/private/
