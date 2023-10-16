@@ -33,6 +33,10 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
         <!--测试类，视频的启动不了-->
         <dependency>
             <groupId>junit</groupId>

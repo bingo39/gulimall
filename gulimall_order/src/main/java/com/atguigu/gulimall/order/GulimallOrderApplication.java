@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.order;
 
+import com.alibaba.cloud.seata.GlobalTransactionAutoConfiguration;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,7 +19,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
  * 4. 注解开启：@EnableRabbit
  * 5. 监听消息：使用@RabbitListener:必须有@EnableRabbit
  */
-@SpringBootApplication
+@SpringBootApplication(exclude = GlobalTransactionAutoConfiguration.class)
 @EnableRabbit
 @EnableRedisHttpSession
 @EnableDiscoveryClient

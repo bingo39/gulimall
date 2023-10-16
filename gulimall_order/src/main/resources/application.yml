@@ -30,6 +30,9 @@ spring:
     listener:
       simple:
         acknowledge-mode: manual
+        retry:
+          initial-interval: 10000ms
+          max-attempts: 3
   ## thymeleaf
   thymeleaf:
     cache: false

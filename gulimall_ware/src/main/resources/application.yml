@@ -15,9 +15,18 @@ spring:
   # nacos注册中心需要每个服务都有对应应用的名字
   application:
     name: gulimall-ware
-  #返回json修改时间戳
+  # 返回json修改时间戳
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
+  # 配置rabbitmq
+  rabbitmq:
+    host: 192.168.31.106
+    port: 5672
+    virtual-host: /
+    ## 开启手动ack
+    listener:
+      simple:
+        acknowledge-mode: manual
 
 mybatis-plus:
   ## *表示不只是扫描类路径，连依赖路径下的xml文件都一起扫描

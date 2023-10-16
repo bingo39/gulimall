@@ -30,19 +30,17 @@ public class WareSkuController {
     @Autowired
     private WareSkuService wareSkuService;
 
-
     /**
      * 订单锁定库存
      */
     @PostMapping("/lock/order")
     public R orderLockStock(@RequestBody WareSkuLockVo vo){
-        Boolean stock = wareSkuService.orderLockStock(vo);
         try{
-            wareSkuService.orderLockStock(vo);
+            Boolean stock = wareSkuService.orderLockStock(vo);
+            return R.ok().setData(stock);
         }catch (NoStockException e){
             return R.error(BizCodeEnume.NO_STOCK_EXCEPTION.getCode(),BizCodeEnume.NO_STOCK_EXCEPTION.getMsg());
         }
-        return R.ok().setData(stock);
     }
 
     /**

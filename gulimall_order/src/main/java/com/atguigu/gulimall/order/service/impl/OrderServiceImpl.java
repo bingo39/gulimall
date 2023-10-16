@@ -2,10 +2,10 @@ package com.atguigu.gulimall.order.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.exception.NoStockException;
+import com.atguigu.common.to.mq.OrderTo;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberRespVo;
 import com.atguigu.gulimall.order.constant.OrderConstant;
-import com.atguigu.gulimall.order.dao.OrderItemDao;
 import com.atguigu.gulimall.order.entity.OrderItemEntity;
 import com.atguigu.gulimall.order.enume.OrderStatusEnum;
 import com.atguigu.gulimall.order.feign.CartFeignService;
@@ -17,9 +17,9 @@ import com.atguigu.gulimall.order.service.OrderItemService;
 import com.atguigu.gulimall.order.to.OrderCreateTo;
 import com.atguigu.gulimall.order.vo.*;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
-import io.seata.spring.annotation.GlobalTransactional;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -66,6 +66,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     ProductFeignService productFeignService;
     @Autowired
     OrderItemService orderItemService;
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -183,6 +185,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                    responseVo.setOrderEntity(order.getOrderEntity());
                    //TODO 5.远程扣减积分
 //                   int i=10/0;  //模拟“order服务提交成功，但ware服务异常，分布式事务能否正常回滚”
+                   //订单创建成功，发送消息给mq
+                   rabbitTemplate.convertAndSend("order-event-exchange","order.create.order",order.getOrderEntity());
                    return responseVo;
                }else{
                    //锁失败
@@ -193,7 +197,34 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                responseVo.setCode(2);
                return responseVo;
            }
+        }
+    }
 
+    @Override
+    public OrderEntity getOrderByOrderSn(String orderSn) {
+        OrderEntity orderEntity = this.getOne(new QueryWrapper<OrderEntity>().eq("order_sn", orderSn));
+        return orderEntity;
+    }
+
+    @Override
+    public void closeOrder(OrderEntity entity) {
+        //查询当前订单的最新状态
+        OrderEntity orderEntity = this.getById(entity.getId());
+        if(orderEntity.getStatus() == OrderStatusEnum.CREATE_NEW.getCode()){
+            //只有待付款才可以关单
+            OrderEntity update = new OrderEntity();
+            update.setId(orderEntity.getId());
+            update.setStatus(OrderStatusEnum.CANCLED.getCode());
+            this.updateById(update);
+            OrderTo orderTo = new OrderTo();
+            BeanUtils.copyProperties(orderEntity,orderTo);
+            //发送mq,可以执行解锁库存操作
+           try{
+               //TODO 保证消息一定会发送出去。每一个消息都做好日志记录（给数据库保存每一个消息的详细信息,定期扫描数据库重新发送）
+               rabbitTemplate.convertAndSend("order-event-exchange","order.release.order",orderTo);
+           }catch (Exception e){
+               //将没发送成功的消息重新进行发送 例如：while
+           }
         }
     }
 
@@ -208,13 +239,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
 
         List<OrderItemEntity> orderItems = order.getOrderItems();
-        orderItems.stream().map(item->{
-            item.setOrderId(orderEntity.getId());
-            //seata与mybatis-plus saveBatch方法有冲突，退而求次
-            orderItemService.save(item);
-            return item;
-        }).collect(Collectors.toList());
-//        orderItemService.saveBatch(orderItems);
+//        orderItems.stream().map(item->{
+//            item.setOrderId(orderEntity.getId());
+//            //seata与mybatis-plus saveBatch方法有冲突，退而求次
+//            orderItemService.save(item);
+//            return item;
+//        }).collect(Collectors.toList());
+        orderItemService.saveBatch(orderItems);
 
     }
 
